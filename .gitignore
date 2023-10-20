@@ -129,5 +129,5 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-# Webstorm ide
+# Webstorm ide dir
 .idea
