@@ -1,14 +1,15 @@
-import {getNextPosition} from '../utils/calculPosition';
+import {movementList, Movement} from "../enumsAndConstants/movement";
+import {Orientation, orientationMovementList} from "../enumsAndConstants/orientation";
 
 export class Adventurer {
     private _name: string;
     private _xPosition: number;
     private _yPosition: number;
-    private _orientation: string;
+    private _orientation: Orientation;
     private _movementList: string;
     private _treasureCount: number;
 
-    constructor(name: string, xPosition: number, yPosition: number, orientation: string, movementList: string, treasureCount: number) {
+    constructor(name: string, xPosition: number = 0, yPosition: number = 0, orientation: Orientation = Orientation.N, movementList: string = "", treasureCount: number = 0) {
         this._name = name;
         this._xPosition = xPosition;
         this._yPosition = yPosition;
@@ -23,7 +24,7 @@ export class Adventurer {
         return this._name;
     }
 
-    getTreasueCount(): number {
+    getTreasureCount(): number {
         return this._treasureCount;
     }
 
@@ -44,53 +45,99 @@ export class Adventurer {
     }
 
     // SETTERS
-    setPosition(xPosition: number, yPosition: number): void {
-        this._xPosition = xPosition;
-        this._yPosition = yPosition;
-    }
-
     moveToPosition(xPosition: number, yPosition: number): void {
         this._xPosition = xPosition;
         this._yPosition = yPosition;
-        this._movementList = this._movementList.slice(1);
     }
 
-    setOrientation(orientation: string): void {
+    setOrientation(orientation: Orientation): void {
         this._orientation = orientation;
+    }
+
+    getNextPosition() {
+        const nextMove = this._movementList[0];
+        const {x, y} = this.getPosition();
+        const orientation = this.getOrientation();
+        switch (nextMove) {
+            case 'A':
+                switch (orientation) {
+                    case 'N':
+                        return {x, y: y - 1};
+                    case 'S':
+                        return {x, y: y + 1};
+                    case 'E':
+                        return {x: x + 1, y};
+                    case 'O':
+                        return {x: x - 1, y};
+                }
+            case 'G':
+            case 'D':
+            default:
+                return {x, y};
+
+        }
+    }
+
+    getLeftOrientation(): Orientation | undefined {
+        const orientation = this.getOrientation();
+        switch (orientation) {
+            case 'N':
+                return Orientation.O;
+            case 'S':
+                return Orientation.E;
+            case 'E':
+                return Orientation.N;
+            case 'O':
+                return Orientation.S;
+        }
+    }
+
+    getRightOrientation(): Orientation | undefined {
+        const orientation = this.getOrientation();
+        switch (orientation) {
+            case 'N':
+                return Orientation.E;
+            case 'S':
+                return Orientation.O;
+            case 'E':
+                return Orientation.S;
+            case 'O':
+                return Orientation.N;
+        }
+    }
+
+    makeNextMove() {
+        const movement = this._movementList[0];
+        if (orientationMovementList.includes(movement)) {
+            let nextOrientation = null;
+            switch (movement) {
+                case 'G':
+                    nextOrientation = this.getLeftOrientation();
+                    break;
+                case 'D':
+                    nextOrientation = this.getRightOrientation();
+                    break;
+            }
+            if (nextOrientation) {
+                this.setOrientation(nextOrientation);
+            }
+        } else if (movementList.includes(movement)) {
+            const {x, y} = this.getNextPosition();
+            this.moveToPosition(x, y);
+        }
+        this._movementList = this._movementList.slice(1);
     }
 
     // OTHER METHODS
 
-    addTreasure(): void {
+    collectTreasure(): void {
         this._treasureCount++;
     }
 
-    withdrawTreasure(): void {
+    dropTreasure(): void {
         if (this._treasureCount > 0) {
             this._treasureCount--;
         }
-    }
-
-    moveToNextPosition(nextMovementIsPossible: boolean): void {
-        if (nextMovementIsPossible) {
-            const nextMovement = this._movementList[0];
-            if (nextMovement === 'A') {
-                const nextPosition: {
-                    x: number,
-                    y: number
-                } | undefined = getNextPosition(this._xPosition, this._yPosition, this._orientation);
-                if (nextPosition === undefined) {
-                    throw new Error('Error while moving to next position');
-                } else if (nextPosition.x && nextPosition.y) {
-                    this._xPosition = nextPosition.x;
-                    this._yPosition = nextPosition.y;
-                }
-
-            } else {
-                this._orientation = nextMovement;
-            }
-        }
-        this._movementList = this._movementList.slice(1);
     }
 
 
