@@ -55,9 +55,12 @@ export class Adventurer {
     }
 
     getNextPosition() {
-        const nextMove = this._movementList[0];
         const {x, y} = this.getPosition();
         const orientation = this.getOrientation();
+        if (this._movementList.length === 0) {
+            return {x, y};
+        }
+        const nextMove = this._movementList[0];
         switch (nextMove) {
             case 'A':
                 switch (orientation) {
@@ -74,7 +77,6 @@ export class Adventurer {
             case 'D':
             default:
                 return {x, y};
-
         }
     }
 
@@ -106,7 +108,7 @@ export class Adventurer {
         }
     }
 
-    makeNextMove() {
+    makeNextMove(): void {
         const movement = this._movementList[0];
         if (orientationMovementList.includes(movement)) {
             let nextOrientation = null;
@@ -124,6 +126,8 @@ export class Adventurer {
         } else if (movementList.includes(movement)) {
             const {x, y} = this.getNextPosition();
             this.moveToPosition(x, y);
+        } else {
+            throw new Error('Adventurer does not know about this movement');
         }
         this._movementList = this._movementList.slice(1);
     }
