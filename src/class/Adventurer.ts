@@ -45,16 +45,6 @@ export class Adventurer {
         return this._movementList[0];
     }
 
-    // SETTERS
-    moveToPosition(xPosition: number, yPosition: number): void {
-        this._xPosition = xPosition;
-        this._yPosition = yPosition;
-    }
-
-    setOrientation(orientation: Orientation): void {
-        this._orientation = orientation;
-    }
-
     getNextPosition() {
         const {x, y} = this.getPosition();
         const orientation = this.getOrientation();
@@ -113,14 +103,26 @@ export class Adventurer {
         return this._movementList.length > 0;
     }
 
+    // SETTERS
+    setOrientation(orientation: Orientation): void {
+        this._orientation = orientation;
+    }
+
+    moveToPosition(xPosition: number, yPosition: number): void {
+        this._xPosition = xPosition;
+        this._yPosition = yPosition;
+    }
+
+
+    // METHODS
     play(canMakeNextMove: boolean) {
         if (canMakeNextMove) {
             this.makeNextMove();
         } else {
             this._movementList = this._movementList.slice(1);
         }
-
     }
+
     makeNextMove(): void {
         const movement = this._movementList[0];
         if (orientationMovementList.includes(movement)) {
@@ -145,17 +147,10 @@ export class Adventurer {
         this._movementList = this._movementList.slice(1);
     }
 
-    // OTHER METHODS
-
     collectTreasure(): void {
         this._treasureCount++;
     }
 
-    dropTreasure(): void {
-        if (this._treasureCount > 0) {
-            this._treasureCount--;
-        }
-    }
 
 
 }
