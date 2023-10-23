@@ -1,82 +1,90 @@
 import {Adventurer} from "./Adventurer";
-import {Treasure} from "./Treasure";
+import {CustomMap} from "./Map";
+import {orientationMovementList} from "../enumsAndConstants/orientation";
 
-export class Cell {
-    private _adventurer: Adventurer | null;
-    private _treasure: Treasure | null;
-    private _isMountain: boolean;
-    private _isPlain: boolean;
+export class Game {
+    private _adventurerList: Adventurer [];
+    private map: CustomMap | null;
 
 
-    constructor(cellContent: Adventurer | Treasure | null = null, isMountain: boolean = false, isPlain: boolean = false) {
-        if (cellContent instanceof Adventurer) {
-            this._adventurer = cellContent;
-            this._treasure = null;
-        } else if (cellContent instanceof Treasure) {
-            this._adventurer = null;
-            this._treasure = cellContent;
+    constructor(map?: CustomMap, adventurerList: Adventurer[] = []) {
+        this._adventurerList = adventurerList;
+        this.map = map ? map : null;
+    }
+
+    addAdventurer(adventurer: Adventurer) {
+        if (this._adventurerList.findIndex((adv) => adv.getName() === adventurer.getName()) !== -1) {
+            throw new Error('Adventurer already exists');
         } else {
-            this._adventurer = null;
-            this._treasure = null;
-        }
-
-        if (isMountain) {
-            this._isMountain = true;
-            this._isPlain = false;
-        } else {
-            this._isMountain = false;
-            this._isPlain = true;
+            this._adventurerList.push(adventurer);
         }
     }
 
-    isMountain(): boolean {
-        return this._isMountain;
+    getAdventurerList(): Adventurer[] {
+        return this._adventurerList;
     }
 
-    isPlain(): boolean {
-        return this._isPlain;
+    hasMap(): boolean {
+        return this.map !== null;
     }
 
-    getTreasure(): Treasure | null {
-        return this._treasure;
+    getMap() {
+        return this.map;
     }
 
-    getAdventurer(): Adventurer | null {
-        return this._adventurer;
-    }
-
-    setAdventurer(adventurer: Adventurer) {
-        this._adventurer = adventurer;
-    }
-
-    setTreasure(treasure: Treasure) {
-        this._treasure = treasure;
-    }
-
-
-    getDisplayedContent(): string {
-        if (this._adventurer) {
-            return 'A (' + this._adventurer.getName() + ')';
-        } else if (this._treasure) {
-            return 'T (' + this._treasure.getCount() + ')';
-        } else if (this._isMountain) {
-            return 'M';
-        } else {
-            return '.';
+    printMap() {
+        if (this.map) {
+            this.map.printMap();
         }
     }
-    collectTreasure() {
-        let collectedTreasure = 0;
-        if (this._treasure) {
-            collectedTreasure = this._treasure.collectTreasure();
-            const newTreasureCount = this._treasure?.getCount();
-            if (newTreasureCount <= 0) {
-                this._treasure = null;
-            }
-        }
-        return collectedTreasure;
+    setMap(map: CustomMap) {
+        this.map = map;
     }
-    isOccupied(): boolean {
-        return this._adventurer !== null;
+
+    startGame() {
+        let anyAdventurerHasMoves = true;
+        while (anyAdventurerHasMoves) {
+            anyAdventurerHasMoves = false;
+            this._adventurerList.forEach((adventurer) => {
+                if (adventurer.hasMovesRemaining()) {
+                    anyAdventurerHasMoves = true;
+                    const {x: currentPositionX, y: currentPositionY} = adventurer.getPosition();
+                    const {x: nextPositionX, y: nextPositionY} = adventurer.getNextPosition();
+                    if (this.map) {
+                        const currentCell = this.map.getCell(currentPositionX, currentPositionY);
+                        const nextCell = this.map.getCell(nextPositionX, nextPositionY);
+                        const nextMoveIsOrientation = orientationMovementList.includes(adventurer.getNextMovementOrPosition());
+                        if (currentCell !== nextCell || nextMoveIsOrientation) {
+                            if (nextMoveIsOrientation) { // Adventurer is turning left or right but will not move to another cell and will not collect treasure.
+                                adventurer.play(true);
+                            } else if (nextCell.isAvailable()) {
+                                adventurer.play(true);
+                                this.map.getCell(currentPositionX, currentPositionY).setAdventurer(null);
+                                const treasure = nextCell.getTreasure();
+                                if (treasure) {
+                                    adventurer.collectTreasure();
+                                    treasure.collectTreasure();
+                                }
+                                nextCell.setAdventurer(adventurer);
+                            } else { // Adventurer cannot move to the next cell, current move is skipped.
+                                adventurer.play(false);
+                            }
+                        } else { // Adventurer already on the cell
+                            adventurer.play(false);
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    getAdventurerTreasureCountList(): Adventurer[] {
+        const adventurerListSortedByTreasureCount = this._adventurerList.sort((a, b) => {
+            return b.getTreasureCount() - a.getTreasureCount();
+        });
+        adventurerListSortedByTreasureCount.forEach((adventurer) => {
+            console.log(adventurer.getName() + ' : ' + adventurer.getTreasureCount() + ' trésors');
+        });
+        return adventurerListSortedByTreasureCount;
     }
 }
