@@ -29,23 +29,16 @@ export class Cell {
         }
     }
 
-    isMountain(): boolean {
-        return this._isMountain;
-    }
-
-    isPlain(): boolean {
-        return this._isPlain;
+    setMountain() {
+        this._isMountain = true;
+        this._isPlain = false;
     }
 
     getTreasure(): Treasure | null {
         return this._treasure;
     }
 
-    getAdventurer(): Adventurer | null {
-        return this._adventurer;
-    }
-
-    setAdventurer(adventurer: Adventurer) {
+    setAdventurer(adventurer: Adventurer | null) {
         this._adventurer = adventurer;
     }
 
@@ -56,9 +49,9 @@ export class Cell {
 
     getDisplayedContent(): string {
         if (this._adventurer) {
-            return 'A (' + this._adventurer.getName() + ')';
+            return 'A(' + this._adventurer.getName() + ')';
         } else if (this._treasure) {
-            return 'T (' + this._treasure.getCount() + ')';
+            return 'T('+ this._treasure.getCount() + ')';
         } else if (this._isMountain) {
             return 'M';
         } else {
@@ -76,7 +69,12 @@ export class Cell {
         }
         return collectedTreasure;
     }
-    isOccupied(): boolean {
-        return this._adventurer !== null;
+
+    isAvailable() {
+        return this._isPlain && !this._adventurer;
     }
+    isTreasure(): boolean {
+        return !!this._treasure;
+    }
+
 }
