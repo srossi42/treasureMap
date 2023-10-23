@@ -16,6 +16,7 @@ export class Adventurer {
         this._orientation = orientation;
         this._movementList = movementList;
         this._treasureCount = treasureCount;
+
     }
 
 
@@ -108,6 +109,18 @@ export class Adventurer {
         }
     }
 
+    hasMovesRemaining(): boolean {
+        return this._movementList.length > 0;
+    }
+
+    play(canMakeNextMove: boolean) {
+        if (canMakeNextMove) {
+            this.makeNextMove();
+        } else {
+            this._movementList = this._movementList.slice(1);
+        }
+
+    }
     makeNextMove(): void {
         const movement = this._movementList[0];
         if (orientationMovementList.includes(movement)) {
