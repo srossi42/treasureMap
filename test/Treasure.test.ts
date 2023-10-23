@@ -6,7 +6,7 @@ describe('collectTreasure', () => {
     // Collects treasure when there is treasure to collect
     it('should collect treasure when there is treasure to collect', () => {
         const cell = new Cell();
-        const treasure = new Treasure(5);
+        const treasure = new Treasure(0, 0, 5);
         cell.setTreasure(treasure);
 
         cell.collectTreasure();
@@ -26,7 +26,7 @@ describe('collectTreasure', () => {
     // Sets treasure to null when all treasure is collected
     it('should set treasure to null when all treasure is collected', () => {
         const cell = new Cell();
-        const treasure = new Treasure(1);
+        const treasure = new Treasure(0,0, 1);
         cell.setTreasure(treasure);
 
         cell.collectTreasure();
@@ -35,7 +35,7 @@ describe('collectTreasure', () => {
     });
 
     it('should increase the count', () => {
-        const treasure = new Treasure();
+        const treasure = new Treasure(0,0, 1);
 
         // Increase the count and verify it
         treasure.increaseTreasureCount();
@@ -47,7 +47,7 @@ describe('collectTreasure', () => {
     });
 
     it('should collect treasure', () => {
-        const treasure = new Treasure(2);
+        const treasure = new Treasure(0,0, 2);
 
         // Collect a treasure and verify the count decreases by 1
         const collected = treasure.collectTreasure();
@@ -67,7 +67,7 @@ describe('collectTreasure', () => {
 
 
     it('should throw an error when a negative count is provided', () => {
-        expect(() => new Treasure(-1)).toThrow('Treasure count must be positive or equal to 0');
+        expect(() => new Treasure(0,0, -1)).toThrow('Treasure count must be positive or equal to 0');
     });
 
 });
