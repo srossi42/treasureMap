@@ -1,11 +1,13 @@
 import {Cell} from "./Cell";
 import {Treasure} from "./Treasure";
 import {Adventurer} from "./Adventurer";
+import {Mountain} from "./Mountain";
 
 export class CustomMap {
     private _width: number;
     private _height: number;
     private _map: Cell[][];
+    private _mountainList: Mountain[] = [];
 
     private _availableOrientationList: string[] = ['N', 'S', 'E', 'O'];
     private _availableActionList: string[] = ['A', 'G', 'D'];
@@ -26,6 +28,35 @@ export class CustomMap {
         }
     }
 
+    addMountain(mountain: Mountain) {
+        this._mountainList.push(mountain);
+    }
+
+    getMountainList(): Mountain[] {
+        return this._mountainList;
+    }
+
+    getTreasureList(): Treasure[] {
+        const treasureList: Treasure[] = [];
+        this._map.forEach((row) => {
+            row.forEach((cell) => {
+                if (cell.isTreasure()) {
+                    const treasure = cell.getTreasure();
+                    if (treasure) {
+                        treasureList.push(treasure);
+                    }
+                }
+            });
+        });
+        return treasureList;
+    }
+    getWidth(): number {
+        return this._width;
+    }
+
+    getHeight(): number {
+        return this._height;
+    }
     getNextPosition(x: number, y: number, orientation: string): { x: number, y: number } | undefined {
         if (!this._availableOrientationList.includes(orientation)) {
             throw new Error('Orientation is not valid');
@@ -44,16 +75,11 @@ export class CustomMap {
         }
     }
 
-    isPositionValid(x: number, y: number): boolean {
-        return x >= 0 && x < this._width && y >= 0 && y < this._height;
+
+    getCell(x: number, y: number): Cell {
+        return this._map[y][x];
     }
 
-
-    isPositionAvailable(x: number, y: number): boolean {
-        const cell = this._map[y][x];
-        return this.isPositionValid(x, y) && cell.isPlain() && !cell.isOccupied();
-
-    }
     getMap(): { width: number; height: number; map: Cell[][] } {
         return {
             width: this._width,
@@ -63,34 +89,30 @@ export class CustomMap {
     }
 
     printMap(): void {
+        let columnMaxWidth = 0;
+
+        // Calculate the maximum width for each column
         for (const row of this._map) {
-            console.log(row.map(cell => cell.getDisplayedContent()).join('    '));
+            row.forEach((cell) => {
+                const content = cell.getDisplayedContent().toString();
+                const cellWidth = content.length;
+                if (cellWidth > columnMaxWidth) {
+                    columnMaxWidth = cellWidth; // Update the maximum width
+                }
+            });
+        }
+
+        // Print the map with aligned columns
+        for (const row of this._map) {
+            const alignedRow = row.map((cell) => {
+                const content = cell.getDisplayedContent().toString();
+                const padding = ' '.repeat(columnMaxWidth - content.length);
+                return content + padding;
+            });
+            console.log(alignedRow.join('    '));
         }
     }
 
-    setMountain(x: number, y: number): void {
-        this._map[y][x] = new Cell(null, true);
-    }
-
-    setTreasure(x: number, y: number): void {
-        const cell = this._map[y][x];
-        const treasure = cell.getTreasure();
-        if (treasure) {
-            treasure.increaseTreasureCount();
-            this._map[y][x].setTreasure(treasure);
-        } else {
-            this._map[y][x].setTreasure(new Treasure());
-        }
-    }
-
-
-    setAdventurer(x: number, y: number, adventurer: Adventurer): void {
-        this._map[y][x] = new Cell(adventurer, false, false);
-    }
-
-    resetCell(x: number, y: number): void {
-        this._map[y][x] = new Cell();
-    }
 
 }
 
