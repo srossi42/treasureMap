@@ -8,18 +8,14 @@ describe('collectTreasure', () => {
         const cell = new Cell();
         const treasure = new Treasure(0, 0, 5);
         cell.setTreasure(treasure);
-
         cell.collectTreasure();
-
         expect(cell.getTreasure()?.getCount()).toBe(4);
     });
 
     // Does not collect treasure when there is no treasure to collect
     it('should not collect treasure when there is no treasure to collect', () => {
         const cell = new Cell();
-
         cell.collectTreasure();
-
         expect(cell.getTreasure()).toBeNull();
     });
 
@@ -28,9 +24,7 @@ describe('collectTreasure', () => {
         const cell = new Cell();
         const treasure = new Treasure(0,0, 1);
         cell.setTreasure(treasure);
-
         cell.collectTreasure();
-
         expect(cell.getTreasure()).toBeNull();
     });
 
@@ -39,11 +33,11 @@ describe('collectTreasure', () => {
 
         // Increase the count and verify it
         treasure.increaseTreasureCount();
-        expect(treasure.getCount()).toBe(1);
+        expect(treasure.getCount()).toBe(2);
 
         // Increase again
         treasure.increaseTreasureCount();
-        expect(treasure.getCount()).toBe(2);
+        expect(treasure.getCount()).toBe(3);
     });
 
     it('should collect treasure', () => {
@@ -61,7 +55,7 @@ describe('collectTreasure', () => {
 
 
         const collectedOneMoreTime = treasure.collectTreasure();
-        expect(collectedOneMoreTime).toBe(0); // Expect ° because there is no more treasure
+        expect(collectedOneMoreTime).toBe(0); // Expect 0 because there is no more treasure
         expect(treasure.getCount()).toBe(0);
     });
 

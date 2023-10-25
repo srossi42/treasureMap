@@ -74,12 +74,8 @@ function processInputLine(line: string, game: Game): void {
     }
 }
 
-
-
-
 function main(): void {
     const game: Game = new Game();
-
     readLineInterface.on('line', (line: string): void => {
         processInputLine(line, game);
     });

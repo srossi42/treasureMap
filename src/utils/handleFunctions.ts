@@ -19,9 +19,9 @@ export function handleCellInstances(game: Game, newInstance: Adventurer | Treasu
             if (newInstance instanceof Adventurer) {
                 handleAdventurer(game, newInstance, map);
             } else if (newInstance instanceof Treasure) {
-                handleTreasure(game, newInstance, map);
+                handleTreasure(newInstance, map);
             } else if (newInstance instanceof Mountain) {
-                handleMountain(game, newInstance, map);
+                handleMountain(newInstance, map);
             }
         }
     } else {
@@ -44,7 +44,7 @@ export function handleAdventurer(game: Game, adventurer: Adventurer, map: Custom
     }
 }
 
-export function handleTreasure(game: Game, treasure: Treasure, map: CustomMap): void {
+export function handleTreasure(treasure: Treasure, map: CustomMap): void {
     try {
         const { x, y } = treasure.getPosition();
         const cell = map.getCell(x, y);
@@ -64,7 +64,7 @@ export function handleTreasure(game: Game, treasure: Treasure, map: CustomMap): 
     }
 }
 
-export function handleMountain(game: Game, mountain: Mountain, map: CustomMap): void {
+export function handleMountain(mountain: Mountain, map: CustomMap): void {
     try {
         const { x, y } = mountain.getPosition();
         const cell = map.getCell(x, y);

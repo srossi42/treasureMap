@@ -1,6 +1,5 @@
 import {Adventurer} from "../src/class/Adventurer";
 import {Orientation} from "../src/enumsAndConstants/orientation";
-import {Treasure} from "../src/class/Treasure";
 
 describe('Adventurer', () => {
 

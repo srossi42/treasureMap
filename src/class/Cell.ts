@@ -38,6 +38,10 @@ export class Cell {
         return this._treasure;
     }
 
+
+    getAdventurer(): Adventurer | null {
+        return this._adventurer;
+    }
     setAdventurer(adventurer: Adventurer | null) {
         this._adventurer = adventurer;
     }
@@ -76,5 +80,10 @@ export class Cell {
     isTreasure(): boolean {
         return !!this._treasure;
     }
+
+    isMountain(): boolean {
+        return this._isMountain;
+    }
+
 
 }

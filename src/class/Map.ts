@@ -10,9 +10,8 @@ export class CustomMap {
     private _mountainList: Mountain[] = [];
 
     private _availableOrientationList: string[] = ['N', 'S', 'E', 'O'];
-    private _availableActionList: string[] = ['A', 'G', 'D'];
 
-    constructor(width: number, height: number) {
+    constructor(width: number = 0, height: number = 0) {
         this._width = width;
         this._height = height;
         this._map = [];
